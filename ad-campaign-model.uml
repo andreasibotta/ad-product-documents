@@ -1,0 +1,95 @@
+@startuml
+skinparam style strictuml
+skinparam linetype ortho
+hide empty members
+
+class Client {
+  + id: uri
+}
+class Program {
+  + id: uri
+}
+
+class Campaign {
+  + id: uri
+  + segment_targets: integer[]
+  + start_date: datetime
+}
+enum CampaignStatus {
+  {static} DRAFT
+  {static} SCHEDULED
+  {static} CANCELLED
+  {static} LAUNCHED
+  {static} STOPPED
+  {static} COMPLETED
+}
+Campaign --> "1" CampaignStatus
+class Placement {
+  + uri: uri
+  + position: int
+}
+abstract class Goal
+class EndDateGoal {
+  + end_date: datetime
+}
+class BudgetGoal {
+  + budget: MonetaryValue
+}`
+class ImpressionGoal {
+  + impressions: integer
+}
+Goal <|-- EndDateGoal
+Goal <|-- BudgetGoal
+Goal <|-- ImpressionGoal
+class BillingTrigger {
+  + billing_type: BillingType
+  + fee: MonetaryValue
+  + value_added: boolean
+}
+Program "0..*" -left- "1..*" Client
+Campaign *-- "0..*" BillingTrigger
+enum BillingType {
+  {static} CPM
+  {static} CPCV
+  {static} CPUM
+  {static} FLAT_FEE
+  {static} SETUP_FEE
+}
+BillingTrigger --> "1" BillingType
+class BillableEvent {
+  + event_time: datetime
+  + amount: MonetaryAmount
+}
+enum BillableEventType {
+  {static} IMPRESSION
+  {static} CLICK
+  {static} CAMPAIGN_LAUNCHED
+  {static} CAMPAIGN_COMPLETE
+}
+enum Vertical {
+  {static} CPG
+  {static} RETAIL
+}
+Client --> "1" Vertical
+BillableEvent --> "1" BillableEventType
+abstract class Ad {
+  + id: uri
+}
+class MediaAd {
+  + creative: blob
+}
+note bottom of MediaAd: e.g. Engagements,\nBanners
+Ad <|-- MediaAd
+class PremiumPlacementAd {
+  + sponsored_content: uri
+}
+note bottom of PremiumPlacementAd: e.g. Sponsored Offers,\nFeatured Retailers
+Ad <|-- PremiumPlacementAd
+
+Program *-- "0..*" Campaign
+Campaign *-- "0..2" Goal
+Campaign "0..*" -- "1..*" Placement
+BillingTrigger *--> "0..*" BillableEvent
+Campaign --> "1" Ad
+
+@enduml

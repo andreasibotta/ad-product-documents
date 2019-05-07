@@ -1,0 +1,62 @@
+@startuml
+skinparam style strictuml
+hide footbox
+
+actor Shopper
+participant Mobile
+participant "Content Gateway" as CS
+database "Content Storage\n(Elasticsearch)" as ES
+participant "Ad Gateway" as AG
+participant "Sponsored Content\nPlacement Service" as SCPS
+participant "Ad Document Service" as ADOCS
+participant "Shopper Segment Service" as SSS
+participant "Monolith" as rails
+
+== Offer View ==
+Shopper -> Mobile: Open Gallery of Offers
+Mobile -> CS: Request Offer(s)
+activate CS
+
+CS -> ES: Retrieve Offer Content
+activate ES
+ES -> CS
+deactivate ES
+
+CS -> Mobile: Offer(s)
+deactivate CS
+
+Mobile -> Shopper: Present Offer(s)
+
+== Offer Unlock ==
+Shopper -> Mobile: Tap Offer Unlock Button
+Mobile -> CS: Request Engagement for Offer
+activate CS
+CS -> AG: Request Engagement for Offer
+activate AG
+AG -> SCPS: Request Engagement Choice for Placement Context
+activate SCPS
+SCPS -> SSS: Get Active Segments for Shopper
+activate SSS
+SSS -> SCPS
+deactivate SSS
+
+SCPS -> SCPS: Filter Ineligible Engagements
+SCPS -> SCPS: Prioritize Eligible Engagements
+
+SCPS -> AG: Chosen Engagement URI(s)
+deactivate SCPS
+
+AG -> ADOCS: Retrieve Content of Chosen Engagement(s)
+activate ADOCS
+ADOCS -> AG
+deactivate ADOCS
+AG -> CS: Engagement(s)
+deactivate AG
+CS -> Mobile: Engagement(s)
+deactivate CS
+Mobile -> Shopper: Present Engagement
+
+Shopper -> Mobile: Complete Engagement
+Mobile -> rails: Unlock Offer and Record Completed Engagement
+
+@enduml
