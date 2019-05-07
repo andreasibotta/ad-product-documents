@@ -1,0 +1,135 @@
+@startuml
+skinparam style strictuml
+skinparam linetype ortho
+hide empty members
+
+/' Classes '/
+class Client {
+  + id: uri
+  + name: string
+}
+
+class Budget {
+   + client: id
+   + bundle: id
+   + amount: float
+}
+
+class Bundle {
+  + id: uri
+  + name: string
+}
+
+class AdCampaign {
+  + id: uri
+  + passback: boolean
+  + paceFactor: float
+}
+note top of AdCampaign: Do we want pacing on \nthe AdCampaign model in the future?
+
+abstract class AdFormat {
+  + id: uri
+}
+
+class Placement {
+  + uri: uri
+  position: int
+}
+note bottom of Placement: "position" is needed for now,\nbut maybe not in the future
+
+
+abstract class Goal
+class EndDateGoal {
+  + end_date: datetime
+}
+class BudgetGoal {
+  + budget: MonetaryValue
+}
+class ImpressionGoal {
+  + impressions: integer
+}
+Goal <|-- EndDateGoal
+Goal <|-- BudgetGoal
+Goal <|-- ImpressionGoal
+
+class Billing {
+  + type: BillingType
+  + fee: MonetaryValue
+}
+note top of Billing: Handle currency? \n"Max fee" for CPM/CPCV
+
+class BillableEvent {
+  + timestamp: datetime
+  + amount: MonetaryValue
+  + type: BillableEventType
+}
+
+class MediaAd {
+  + creative: blob
+}
+note bottom of MediaAd: e.g. Engagements,\nBanners
+note top of MediaAd: e.g. Does these cover\noutside of the app ads?
+AdFormat <|-- MediaAd
+class PremiumPlacementAd {
+  + sponsored_content: uri
+}
+note bottom of PremiumPlacementAd: e.g. Sponsored Offers,\nFeatured Retailers
+AdFormat <|-- PremiumPlacementAd
+
+class FunnelTracking {
+  + uri: uri
+  + type: FunnelTrackingType
+}
+/' Enums '/
+
+enum CampaignStatus {
+  {static} DRAFT
+  {static} SCHEDULED
+  {static} CANCELLED
+  {static} LAUNCHED
+  {static} STOPPED
+  {static} COMPLETED
+}
+
+enum BillingType {
+  {static} CPM
+  {static} CPCV
+  {static} CPUM
+  {static} FLAT_FEE
+  {static} SETUP_FEE
+}
+note bottom of BillingType: Do we need both CPM and CPCV?
+
+enum BillableEventType {
+  {static} IMPRESSION
+  {static} CLICK
+  {static} CAMPAIGN_LAUNCHED
+  {static} CAMPAIGN_COMPLETE
+  {static} SETUP
+  {static} FUNNEL UNLOCK
+  {static} FUNNEL REDEMPTION
+}
+note bottom of BillableEventType: Any more types?
+
+enum FunnelTrackingType {
+  {static} UNLOCK
+  {static} REDEMPTION
+}
+
+/' Relations '/
+Bundle "1" -left- "1..*" Budget
+Bundle "1" -down- "1..*" AdCampaign
+Budget "1" -right- "1..*" Client
+AdCampaign "1" -left- "1" AdFormat
+AdCampaign "0..*" -down- "1" CampaignStatus
+AdCampaign "0..*" -down- "1" Placement
+AdCampaign "0..*" -down- "0..2" Goal
+Billing "1" -left- "0..*" AdCampaign
+BillingType "1" -up- "1" Billing
+Billing "1" -right- "0..*" BillableEvent
+BillableEvent "1" -down- "1" BillableEventType
+AdCampaign "1" -down- "0..*" FunnelTracking
+FunnelTracking "0..*" -down- "1" FunnelTrackingType
+
+
+@enduml
