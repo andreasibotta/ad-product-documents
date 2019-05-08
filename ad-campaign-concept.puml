@@ -50,14 +50,18 @@ class BudgetGoal {
 class ImpressionGoal {
   + impressions: integer
 }
-class BundleBudget {
+class BundleBudgetGoal { 
 
 }
+class EvergreenBudgetGoal {
+
+ }
 note bottom of BundleBudget: Indicating to run until the budget for the bundle runs out
 Goal <|-- EndDateGoal
 Goal <|-- BudgetGoal
 Goal <|-- ImpressionGoal
-Goal <|-- BundleBudget
+Goal <|-- BundleBudgetGoal
+Goal <|-- EvergreenBudgetGoal
 
 class Billing {
   + type: BillingType
