@@ -22,6 +22,8 @@ class Bundle {
 
 class AdCampaign {
   + id: uri
+  + segments: int[]
+    startTime: DateTime
   + passback: boolean
   + paceFactor: float
 }
@@ -48,9 +50,14 @@ class BudgetGoal {
 class ImpressionGoal {
   + impressions: integer
 }
+class BundleBudget {
+
+}
+note bottom of BundleBudget: Indicating to run until the budget for the bundle runs out
 Goal <|-- EndDateGoal
 Goal <|-- BudgetGoal
 Goal <|-- ImpressionGoal
+Goal <|-- BundleBudget
 
 class Billing {
   + type: BillingType
@@ -80,6 +87,26 @@ class FunnelTracking {
   + uri: uri
   + type: FunnelTrackingType
 }
+
+class RequiredFields {
+  + fields: string[]
+}
+note left of RequiredFields: For fields required and\napprovals from other departments etc
+
+abstract class ClickThrough {
+
+}
+class ClickThroughSearchTerm {
+  query: string
+}
+class ClickThroughOfferList {
+  uri: uri[]
+}
+ClickThrough <|-- ClickThroughSearchTerm
+ClickThrough <|-- ClickThroughOfferList
+
+
+
 /' Enums '/
 
 enum CampaignStatus {
@@ -117,19 +144,23 @@ enum FunnelTrackingType {
 }
 
 /' Relations '/
-Bundle "1" -left- "1..*" Budget
-Bundle "1" -down- "1..*" AdCampaign
+Bundle "1" -right- "1..*" Budget
 Budget "1" -right- "1..*" Client
+AdCampaign "1..*" -up- Bundle
 AdCampaign "1" -left- "1" AdFormat
 AdCampaign "0..*" -down- "1" CampaignStatus
 AdCampaign "0..*" -down- "1" Placement
 AdCampaign "0..*" -down- "0..2" Goal
+AdCampaign "1" -- "0..*" ClickThrough
 Billing "1" -left- "0..*" AdCampaign
 BillingType "1" -up- "1" Billing
 Billing "1" -right- "0..*" BillableEvent
 BillableEvent "1" -down- "1" BillableEventType
 AdCampaign "1" -down- "0..*" FunnelTracking
 FunnelTracking "0..*" -down- "1" FunnelTrackingType
+AdFormat "1" -up- "0..*" RequiredFields
+
+
 
 
 @enduml

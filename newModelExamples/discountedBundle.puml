@@ -1,0 +1,109 @@
+@startuml
+skinparam style strictuml
+skinparam linetype ortho
+hide empty members
+
+/' Classes '/
+class Client {
+  + id: "xyz123"
+  + name: "Pepsi"
+}
+
+class Budget {
+   + client: "xyz123"
+   + bundle: "aaa1111"
+   + amount: $9,000
+}
+
+class IbottaClient {
+  + id: "xyz987"
+  + name: "Ibotta"
+}
+
+class DiscountBudget {
+   + client: "xyz987"
+   + bundle: "aaa1111"
+   + amount: $1,000
+}
+
+class Bundle {
+  + id: "aaa111"
+  + name: "Discounted Bundle"
+}
+
+class EngagementAdCampaign {
+  + id: "bbb222"
+  + segments: int[]
+    startTime: "2019-06-01"
+  + passback: false
+  + paceFactor: 1.0
+}
+
+abstract class EngagementAdFormat {
+  + id: "ccc333"
+}
+
+class EngagementPlacement {
+  + uri: "offer_reward:ddd444"
+  position: null
+}
+
+abstract class EngagementGoal
+class EngagementBundleBudget {
+}
+EngagementGoal <|-- EngagementBundleBudget
+
+
+class EngagementMediaAd {
+  + creative: "video1"
+}
+EngagementAdFormat <|-- EngagementMediaAd
+
+
+
+class BannerAdCampaign {
+  + id: "bbb999"
+  + segments: int[]
+    startTime: "2019-06-01"
+  + passback: false
+  + paceFactor: 1.0
+}
+
+abstract class BannerAdFormat {
+  + id: "ccc333"
+}
+
+class BannerPlacement {
+  + uri: "offer_reward:ddd444"
+  position: null
+}
+
+abstract class BannerGoal
+class BannerBundleBudget {
+}
+BannerGoal <|-- BannerBundleBudget
+
+
+class BannerMediaAd {
+  + creative: "video1"
+}
+BannerAdFormat <|-- BannerMediaAd
+
+/' Relations '/
+Bundle -up- Budget
+Budget -right- Client
+
+Bundle -up- DiscountBudget
+DiscountBudget -left- IbottaClient
+
+EngagementAdCampaign -up- Bundle
+EngagementAdCampaign -left-EngagementPlacement
+EngagementAdCampaign -left- EngagementAdFormat
+EngagementAdCampaign -down- EngagementGoal
+
+BannerAdCampaign -up- Bundle
+BannerAdCampaign -right- BannerAdFormat
+BannerAdCampaign -right-BannerPlacement
+BannerAdCampaign -down- BannerGoal
+
+@enduml

@@ -1,0 +1,73 @@
+@startuml
+skinparam style strictuml
+skinparam linetype ortho
+hide empty members
+
+/' Classes '/
+class PepsiClient {
+  + id: "xyz123"
+  + name: "Pepsi"
+}
+
+class PepsiBudget {
+   + client: "xyz123"
+   + bundle: "aaa1111"
+   + amount: $10,000
+}
+
+class DoritosClient {
+  + id: "xyz987"
+  + name: "Doritos"
+}
+
+class DoritosBudget {
+   + client: "xyz987"
+   + bundle: "aaa1111"
+   + amount: $5,000
+}
+
+class Bundle {
+  + id: "aaa111"
+  + name: "Simple Bundle"
+}
+
+class AdCampaign {
+  + id: "bbb222"
+  + segments: int[]
+    startTime: "2019-06-01"
+  + passback: false
+  + paceFactor: 1.0
+}
+
+abstract class AdFormat {
+  + id: "ccc333"
+}
+
+class Placement {
+  + uri: "offer_reward:ddd444"
+  position: null
+}
+
+abstract class Goal
+class BundleBudget {
+}
+Goal <|-- BundleBudget
+
+
+class MediaAd {
+  + creative: "video1"
+}
+AdFormat <|-- MediaAd
+
+
+/' Relations '/
+Bundle -up- PepsiBudget
+PepsiBudget -right- PepsiClient
+Bundle -up- DoritosBudget
+DoritosBudget -left- DoritosClient
+AdCampaign -up- Bundle
+AdCampaign -left- AdFormat
+AdCampaign -down- Placement
+AdCampaign -down- Goal
+
+@enduml
