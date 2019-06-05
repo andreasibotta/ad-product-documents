@@ -1,3 +1,6 @@
+' Use PlantUML to generate http://plantuml.com/
+' VS Code plugin: https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml
+
 @startuml
 skinparam style strictuml
 skinparam linetype ortho
